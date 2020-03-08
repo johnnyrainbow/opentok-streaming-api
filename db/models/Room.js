@@ -1,5 +1,6 @@
+const { v4 } = require("uuid")
+
 import * as coreMethods from "../coreMethods"
-import { v4 } from "uuid"
 const tableName = "room"
 
 export class Room {

@@ -3,11 +3,11 @@ const bodyParser = require('body-parser');
 const OpenTok = require('opentok')
 const express = require('express');
 const cors = require('cors');
-import { handleError } from "./lib/middleware/errorHandling"
 
-//pass opentok dependency
+import { handleError } from "./lib/middleware/errorHandling"
 import * as openTokPromises from "./opentok/promises"
 
+//pass opentok dependency
 const opentok = new OpenTok(process.env.API_KEY, process.env.API_SECRET);
 openTokPromises.dependencies.opentok = opentok
 

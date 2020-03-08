@@ -1,8 +1,6 @@
 import * as opentok from "../opentok/promises"
-
 import * as BroadcastModel from "../db/models/Broadcast"
 import * as RoomModel from "../db/models/Room"
-import * as StandardUserModel from "../db/models/StandardUser"
 
 //Create a broadcast for a specified room. our userId must match the room hostId.
 export const createBroadcast = async function (req, res, next) {
