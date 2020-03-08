@@ -84,6 +84,10 @@ export const generateViewerToken = async function (req, res, next) {
 export const getBroadcastById = async function (req, res, next) {
     try {
         const result = await BroadcastModel.getBroadcastById(req.params.id)
+
+        if (result.length === 0)
+            return res.status(404).send({ error: `Broadcast ${req.params.id} not found` })
+
         res.status(200).send({ success: true, broadcast: result[0] })
 
     } catch (e) {

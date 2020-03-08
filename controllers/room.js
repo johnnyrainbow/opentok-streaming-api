@@ -36,7 +36,11 @@ export const joinRoom = async function (req, res, next) {
 export const getRoomBroadcast = async function (req, res, next) {
     try {
         const result = await BroadcastModel.getBroadcastByRoomId(req.params.id)
-        res.status(200).send({ success: true, broadcast: result })
+
+        if (result.length === 0)
+            return res.status(404).send({ error: `No broadcast found for room ${req.params.id}` })
+
+        res.status(200).send({ success: true, broadcast: result[0] })
 
     } catch (e) {
         return next(e)
