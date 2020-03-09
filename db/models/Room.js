@@ -5,15 +5,16 @@ const tableName = "room"
 
 
 export class Room {
-    constructor(hostId, maxOccupancy, startAtOccupancy, title, description, totalCost, isVariableCost, minJoinTime) {
+    constructor(hostId, maxOccupancy, startAtOccupancy, startAtTime, title, description, cost, isVariableCost, minJoinTime) {
         this.id = v4()
         this.hostId = hostId;
         this.maxOccupancy = maxOccupancy
         this.startAtOccupancy = startAtOccupancy
+        this.startAtTime = startAtTime
         this.title = title
         this.description = description
-        this.totalCost = totalCost //the total cost per minute that the room must take from combined users
-        this.isVariableCost = isVariableCost //TRUE if the totalCost should be divided between all users joined, cheaper per user price for larger groups. FALSE if fixed rate per user
+        this.cost = cost //the total cost per minute that the room must take from combined users
+        this.isVariableCost = isVariableCost //the fixed cost of the room per user
         this.state = this.selectStates().WAITING //WAITING, IN_PROGRESS, FINISHED,
         this.minJoinTime = minJoinTime
         this.chatLogsId = null
@@ -22,7 +23,7 @@ export class Room {
 export const selectStates = () => { return { WAITING: "WAITING", IN_PROGRESS, "IN_PROGRESS", FINISHED: "FINISHED" } }
 
 export const createTable = async () => {
-    const query = `CREATE TABLE ${tableName} (id VARCHAR(255) PRIMARY KEY, hostId VARCHAR(255), maxOccupancy INT, startAtOccupancy INT, title VARCHAR(255), description VARCHAR(1000), totalCost INT, isVariableCost BOOL, state VARCHAR(255), minJoinTime INT, chatLogsId VARCHAR(255))`;
+    const query = `CREATE TABLE ${tableName} (id VARCHAR(255) PRIMARY KEY, hostId VARCHAR(255), maxOccupancy INT, startAtOccupancy INT, startAtTime DATETIME, title VARCHAR(255), description VARCHAR(1000), cost INT, isVariableCost BOOL, state VARCHAR(255), minJoinTime INT, chatLogsId VARCHAR(255))`;
     return await coreMethods.runQuery(query)
 }
 

@@ -7,9 +7,9 @@ export const createRoom = async function (req, res, next) {
         //ensure we don't already have an active room
         const result = await RoomModel.getActiveRoomByHostId(req.userId)
         if (result.length > 0) return res.status(400).send({ error: "You already have an active room." })
-        const { maxOccupancy, title, description, totalCost, isVariableCost } = req.body
+        const { maxOccupancy, startAtOccupancy, startAtTime, title, description, cost, isVariableCost, minJoinTime } = req.body
 
-        await RoomModel.createRoom(req.userId, maxOccupancy, title, description, totalCost, isVariableCost)
+        await RoomModel.createRoom(req.userId, maxOccupancy, startAtOccupancy, startAtTime, title, description, cost, isVariableCost, minJoinTime)
         res.status(200).send({ success: true })
 
     } catch (e) {
@@ -36,7 +36,23 @@ export const startRoom = async function (req, res, next) {
     }
 }
 
+export const getRoomCost = async function (req, res, next) {
 
+    const roomResult = await RoomModel.getRoomById(req.params.id)
+    if (roomResult.length === 0) return res.status(404).send({ error: `Room ${req.params.id} not found` })
+
+    let costForUser = null;
+
+    const usersInRoom = await RoomModel.getAllUsersInRoom(req.params.id)
+
+    if (roomResult[0].isVariableCost) {
+        costForUser = roomResult[0].cost / usersInRoom.length
+    } else {
+        costForUser = roomResult[0].cost
+    }
+
+    res.status(200).send({ isVariableCost: roomResult[0].isVariableCost, cost: costForUser })
+}
 
 export const joinRoom = async function (req, res, next) {
     try {
@@ -48,8 +64,8 @@ export const joinRoom = async function (req, res, next) {
         if (roomResult.length === 0) return res.status(404).send({ error: `Room ${req.params.id} not found` })
 
         //ensure room not already full
-        const numInRoom = await RoomModel.getAllUsersInRoom(req.params.id)
-        if (numInRoom >= roomResult[0].maxOccupancy) return res.status(404).send({ error: `Room is full` })
+        const usersInRoom = await RoomModel.getAllUsersInRoom(req.params.id)
+        if (usersInRoom.length >= roomResult[0].maxOccupancy) return res.status(404).send({ error: `Room is full` })
         //TODO do i need some kind of lock to stop race condition joining room
         //update user roomId 
         await StandardUserModel.updateStandardUserRoomId(req.params.id)
