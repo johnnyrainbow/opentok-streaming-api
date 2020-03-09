@@ -44,12 +44,20 @@ export const joinRoom = async function (req, res, next) {
         const myUserResult = await StandardUserModel.getStandardUserById(req.userId)
         if (myUserResult.length === 0) return res.status(500).send({ error: "Not allowed" })
         //ensure room exists
-        const result = await RoomModel.getRoomById(req.params.id)
-        if (result.length === 0) return res.status(404).send({ error: `Room ${req.params.id} not found` })
-        //update user roomId
+        const roomResult = await RoomModel.getRoomById(req.params.id)
+        if (roomResult.length === 0) return res.status(404).send({ error: `Room ${req.params.id} not found` })
+
+        //ensure room not already full
+        const numInRoom = await RoomModel.getAllUsersInRoom(req.params.id)
+        if (numInRoom >= roomResult[0].maxOccupancy) return res.status(404).send({ error: `Room is full` })
+        //TODO do i need some kind of lock to stop race condition joining room
+        //update user roomId 
         await StandardUserModel.updateStandardUserRoomId(req.params.id)
 
-        //check if we have enough capacity to start room
+        //check if we now have enough capacity to start room
+        if (numInRoom >= roomResult[0].maxOccupancy)
+            await RoomModel.updateRoomState(RoomModel.selectStates().IN_PROGRESS)
+
         res.status(200).send({ success: true })
 
     } catch (e) {
