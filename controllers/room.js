@@ -17,6 +17,27 @@ export const createRoom = async function (req, res, next) {
     }
 }
 
+export const startRoom = async function (req, res, next) {
+    try {
+        //ensure room exists
+        const roomResult = await RoomModel.getRoomById(req.params.id)
+        if (roomResult.length === 0) return res.status(404).send({ error: `Room ${req.params.id} not found` })
+
+        //check that we are the room owner
+        if (roomResult[0].hostId !== req.userId)
+            return res.status(400).send({ error: "Unauthorized" })
+        //update user roomId
+        await RoomModel.updateRoomState(RoomModel.selectStates().IN_PROGRESS)
+
+        res.status(200).send({ success: true })
+
+    } catch (e) {
+        return next(e)
+    }
+}
+
+
+
 export const joinRoom = async function (req, res, next) {
     try {
         //ensure that we have a standardUser, and not just a user in auth0. this only really needs to be done at the room check, as it's the first layer
@@ -27,6 +48,8 @@ export const joinRoom = async function (req, res, next) {
         if (result.length === 0) return res.status(404).send({ error: `Room ${req.params.id} not found` })
         //update user roomId
         await StandardUserModel.updateStandardUserRoomId(req.params.id)
+
+        //check if we have enough capacity to start room
         res.status(200).send({ success: true })
 
     } catch (e) {
