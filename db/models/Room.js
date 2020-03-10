@@ -15,12 +15,12 @@ export class Room {
         this.description = description
         this.cost = cost //the total cost per minute that the room must take from combined users
         this.isVariableCost = isVariableCost //the fixed cost of the room per user
-        this.state = this.selectStates().WAITING //WAITING, IN_PROGRESS, FINISHED,
+        this.state = "WAITING" //WAITING, IN_PROGRESS, FINISHED,
         this.minJoinTime = minJoinTime
         this.chatLogsId = null
     }
 }
-export const selectStates = () => { return { WAITING: "WAITING", IN_PROGRESS, "IN_PROGRESS", FINISHED: "FINISHED" } }
+export const selectStates = () => { return { WAITING: "WAITING", IN_PROGRESS: "IN_PROGRESS", FINISHED: "FINISHED" } }
 
 export const createTable = async () => {
     const query = `CREATE TABLE ${tableName} (id VARCHAR(255) PRIMARY KEY, hostId VARCHAR(255), maxOccupancy INT, startAtOccupancy INT, startAtTime DATETIME, title VARCHAR(255), description VARCHAR(1000), cost INT, isVariableCost BOOL, state VARCHAR(255), minJoinTime INT, chatLogsId VARCHAR(255))`;
@@ -36,14 +36,17 @@ export const getRoomById = async id => {
     const query = `SELECT * FROM ${tableName} WHERE id = ?`
     return await coreMethods.runQuery(query, id)
 }
+
 export const updateRoomState = async state => {
     const query = `UPDATE ${tableName} SET state = ?`
     return await coreMethods.runQuery(query, state)
 }
+
 export const getAllRooms = async id => {
     const query = `SELECT * FROM ${tableName}`
     return await coreMethods.runQuery(query, id)
 }
+
 export const getAllUsersInRoom = async id => {
     const query = `SELECT * FROM standarduser WHERE roomId = ?`
     return await coreMethods.runQuery(query, id)

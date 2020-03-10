@@ -24,9 +24,9 @@ export const getAllUsersInRoom = async roomId => {
     return await coreMethods.runQuery(query, roomId)
 }
 
-export const updateStandardUserRoomId = async roomId => {
-    const query = `UPDATE ${tableName} SET roomId = ?`
-    return await coreMethods.runQuery(query, roomId)
+export const updateStandardUserRoomId = async (userId, roomId) => {
+    const query = `UPDATE ${tableName} SET roomId = ? WHERE id = ?`
+    return await coreMethods.runQuery(query, [roomId, userId])
 }
 
 export const createStandardUser = async userId => {

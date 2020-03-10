@@ -10,7 +10,6 @@ export class Broadcast {
         this.sessionId = sessionId
         this.startTime = new Date();
         this.endTime = null
-
     }
 }
 
@@ -24,10 +23,12 @@ export const getAllBroadcasts = async () => await coreMethods.getAll(tableName)
 export const createBroadcast = async (roomId, sessionId) => {
     await coreMethods.create(tableName, new Broadcast(roomId, sessionId))
 }
+
 export const getBroadcastById = async id => {
     const query = `SELECT * FROM ${tableName} WHERE id = ?`
     return await coreMethods.runQuery(query, id)
 }
+
 export const getBroadcastByRoomId = async roomId => {
     const query = `SELECT * FROM ${tableName} WHERE roomId = ?`
     return await coreMethods.runQuery(query, roomId)
