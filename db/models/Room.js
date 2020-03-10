@@ -18,13 +18,24 @@ export class Room {
         this.state = "WAITING" //WAITING, IN_PROGRESS, FINISHED,
         this.minJoinTime = minJoinTime
         this.chatLogsId = null
+        this.broadcastId = null
     }
 }
 export const selectStates = () => { return { WAITING: "WAITING", IN_PROGRESS: "IN_PROGRESS", FINISHED: "FINISHED" } }
 
 export const createTable = async () => {
-    const query = `CREATE TABLE ${tableName} (id VARCHAR(255) PRIMARY KEY, hostId VARCHAR(255), maxOccupancy INT, startAtOccupancy INT, startAtTime DATETIME, title VARCHAR(255), description VARCHAR(1000), cost INT, isVariableCost BOOL, state VARCHAR(255), minJoinTime INT, chatLogsId VARCHAR(255))`;
+    const query = `CREATE TABLE ${tableName} (id VARCHAR(255) PRIMARY KEY, hostId VARCHAR(255), broadcastId VARCHAR(255), maxOccupancy INT, startAtOccupancy INT, startAtTime DATETIME, title VARCHAR(255), description VARCHAR(1000), cost INT, isVariableCost BOOL, state VARCHAR(255), minJoinTime INT, chatLogsId VARCHAR(255))`;
     return await coreMethods.runQuery(query)
+}
+
+export const updateBroadcastId = async (broadcastId, roomId) => {
+    const query = `UPDATE ${tableName} SET broadcastId = ? WHERE id = ?`
+    return await coreMethods.runQuery(query, [broadcastId, roomId])
+}
+
+export const getRoomByBroadcastId = async id => {
+    const query = `SELECT * FROM ${tableName} WHERE broadcastId = ?`
+    return await coreMethods.runQuery(query, id)
 }
 
 export const getActiveRoomByHostId = async hostId => {
@@ -53,5 +64,7 @@ export const getAllUsersInRoom = async id => {
 }
 
 export const createRoom = async (hostId, maxOccupancy, title, description, cost) => {
-    return await coreMethods.create(tableName, new Room(hostId, maxOccupancy, title, description, cost))
+    const createRoom = new Room(hostId, maxOccupancy, title, description, cost)
+    await coreMethods.create(tableName, createRoom)
+    return createRoom
 }
