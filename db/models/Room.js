@@ -6,7 +6,6 @@ const tableName = "room"
 
 export class Room {
     constructor(hostId, maxOccupancy, startAtOccupancy, startAtTime, title, description, cost, isVariableCost, minJoinTime) {
-        this.id = v4()
         this.hostId = hostId;
         this.maxOccupancy = maxOccupancy
         this.startAtOccupancy = startAtOccupancy
@@ -24,7 +23,7 @@ export class Room {
 export const selectStates = () => { return { WAITING: "WAITING", IN_PROGRESS: "IN_PROGRESS", FINISHED: "FINISHED" } }
 
 export const createTable = async () => {
-    const query = `CREATE TABLE ${tableName} (id VARCHAR(255), hostId VARCHAR(255) PRIMARY KEY, maxOccupancy INT, startAtOccupancy INT, startAtTime DATETIME, title VARCHAR(255), description VARCHAR(1000), cost INT, isVariableCost BOOL, state VARCHAR(255), minJoinTime INT, chatLogsId VARCHAR(255))`;
+    const query = `CREATE TABLE ${tableName} (hostId VARCHAR(255) PRIMARY KEY, maxOccupancy INT, startAtOccupancy INT, startAtTime DATETIME, title VARCHAR(255), description VARCHAR(1000), cost INT, isVariableCost BOOL, state VARCHAR(255), minJoinTime INT, chatLogsId VARCHAR(255))`;
     return await coreMethods.runQuery(query)
 }
 
@@ -33,8 +32,8 @@ export const getActiveRoomByHostId = async hostId => {
     return await coreMethods.runQuery(query, hostId)
 }
 
-export const getRoomById = async id => {
-    const query = `SELECT * FROM ${tableName} WHERE id = ?`
+export const getRoomByHostId = async id => {
+    const query = `SELECT * FROM ${tableName} WHERE hostId = ?`
     return await coreMethods.runQuery(query, id)
 }
 

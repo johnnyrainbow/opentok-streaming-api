@@ -8,25 +8,26 @@ export const createBroadcast = async function (req, res, next) {
     try {
         const { roomId } = req.body
 
-        const roomResult = await RoomModel.getRoomById(roomId)
+        const roomResult = await RoomModel.getRoomByHostId(roomId)
 
         if (roomResult.length === 0)
             return res.status(404).send({ error: `Room ${roomId} not found` })
 
         if (roomResult[0].hostId !== req.userId)
-            return res.status(400).send({ error: "Unauthorized" })
+            return res.status(401).send({ error: "Unauthorized" })
 
+        console.log("ATTEMPTING TO CREAATEE")
         //create broadcast in db
         const createdBroadcast = await BroadcastModel.createBroadcast(roomId)
 
         // Instantiate a new session(room) on opentok cloud
         const session = await opentok.createSession({ mediaMode: "routed" })
         const { sessionId } = session;
-
+        console.log("HOT I GOT THIS FAR")
         await BroadcastModel.setSessionId(createdBroadcast.id, sessionId)
         //pass the room into the new cron job, to subtract balance so long as broadcast is live and room is in progress
         //TODO create eventbridge CRON, to run lambda with passed room object 
-
+        console.log("YUM TIME TO SEND")
         res.status(200).send({ success: true, broadcast: createdBroadcast })
 
     } catch (e) {
@@ -42,7 +43,7 @@ export const generatePublisherToken = async function (req, res, next) {
             return res.status(404).send({ error: `Broadcast ${req.params.id} not found` })
 
         //ensure that we are the owner of the room, and therefore the publisher
-        const roomResult = await RoomModel.getRoomByBroadcastId(req.params.id)
+        const roomResult = await RoomModel.getRoomByHostId(req.params.id)
 
         if (roomResult.length === 0)
             return res.status(404).send({ error: `Room ${req.params.id} not found` })

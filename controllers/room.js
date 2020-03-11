@@ -22,7 +22,7 @@ export const createRoom = async function (req, res, next) {
 export const startRoom = async function (req, res, next) {
     try {
         //ensure room exists
-        const roomResult = await RoomModel.getRoomById(req.params.id)
+        const roomResult = await RoomModel.getRoomByHostId(req.params.id)
         if (roomResult.length === 0) return res.status(404).send({ error: `Room ${req.params.id} not found` })
 
         //check that we are the room owner
@@ -40,7 +40,7 @@ export const startRoom = async function (req, res, next) {
 
 export const getRoomCost = async function (req, res, next) {
 
-    const roomResult = await RoomModel.getRoomById(req.params.id)
+    const roomResult = await RoomModel.getRoomByHostId(req.params.id)
     if (roomResult.length === 0) return res.status(404).send({ error: `Room ${req.params.id} not found` })
 
     let costForUser = null
@@ -61,7 +61,7 @@ export const joinRoom = async function (req, res, next) {
         const myUserResult = await StandardUserModel.getStandardUserById(req.userId)
         if (myUserResult.length === 0) return res.status(500).send({ error: "Not allowed" })
         //ensure room exists
-        const roomResult = await RoomModel.getRoomById(req.params.id)
+        const roomResult = await RoomModel.getRoomByHostId(req.params.id)
         if (roomResult.length === 0) return res.status(404).send({ error: `Room ${req.params.id} not found` })
 
         //ensure room not already full
@@ -97,9 +97,9 @@ export const getRoomBroadcast = async function (req, res, next) {
     }
 }
 
-export const getRoomById = async function (req, res, next) {
+export const getRoomByHostId = async function (req, res, next) {
     try {
-        const result = await RoomModel.getRoomById(req.params.id)
+        const result = await RoomModel.getRoomByHostId(req.params.id)
         if (result.length === 0)
             return res.status(404).send({ error: `Room ${req.params.id} not found` })
         //get num users in the room
