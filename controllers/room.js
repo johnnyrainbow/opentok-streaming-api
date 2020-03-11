@@ -7,6 +7,7 @@ export const createRoom = async function (req, res, next) {
         //ensure we don't already have an active room
         // const result = await RoomModel.getActiveRoomByHostId(req.userId)
         // if (result.length > 0) return res.status(400).send({ error: "You already have an active room." })
+
         const { maxOccupancy, startAtOccupancy, startAtTime, title, description, cost, isVariableCost, minJoinTime } = req.body
 
         const roomCreateResult = await RoomModel.createRoom(req.userId, maxOccupancy, startAtOccupancy, startAtTime, title, description, cost, isVariableCost, minJoinTime)

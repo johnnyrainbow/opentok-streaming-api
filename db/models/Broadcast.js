@@ -4,9 +4,9 @@ import * as coreMethods from "../coreMethods"
 const tableName = "broadcast"
 
 export class Broadcast {
-    constructor(roomId, sessionId) {
-        this.id = v4()
-        this.sessionId = sessionId
+    constructor(roomId) {
+        this.id = roomId
+        this.sessionId = null
         this.startTime = new Date();
         this.endTime = null
     }
@@ -24,6 +24,11 @@ export const createBroadcast = async (roomId, sessionId) => {
     await coreMethods.create(tableName, newBroadcast)
 
     return newBroadcast
+}
+
+export const setSessionId = async (broadcastId, sessionId) => {
+    const query = `UPDATE ${tableName} SET sessionId = ? WHERE id = ?`
+    return await coreMethods.runQuery(query, [sessionId, broadcastId])
 }
 
 export const getBroadcastById = async id => {
