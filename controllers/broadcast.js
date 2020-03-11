@@ -16,18 +16,18 @@ export const createBroadcast = async function (req, res, next) {
         if (roomResult[0].hostId !== req.userId)
             return res.status(401).send({ error: "Unauthorized" })
 
-        console.log("ATTEMPTING TO CREAATEE")
         //create broadcast in db
         const createdBroadcast = await BroadcastModel.createBroadcast(roomId)
 
         // Instantiate a new session(room) on opentok cloud
         const session = await opentok.createSession({ mediaMode: "routed" })
         const { sessionId } = session;
-        console.log("HOT I GOT THIS FAR")
+
         await BroadcastModel.setSessionId(createdBroadcast.id, sessionId)
+
+        createdBroadcast.sessionId = sessionId
         //pass the room into the new cron job, to subtract balance so long as broadcast is live and room is in progress
         //TODO create eventbridge CRON, to run lambda with passed room object 
-        console.log("YUM TIME TO SEND")
         res.status(200).send({ success: true, broadcast: createdBroadcast })
 
     } catch (e) {
