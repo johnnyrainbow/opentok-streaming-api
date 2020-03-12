@@ -57,7 +57,7 @@ export const generatePublisherToken = async function (req, res, next) {
         res.status(200).send({ success: true, token })
 
     } catch (e) {
-        return next()
+        return next(e)
     }
 }
 
@@ -75,10 +75,22 @@ export const generateViewerToken = async function (req, res, next) {
         res.status(200).send({ success: true, token })
 
     } catch (e) {
-        return next()
+        return next(e)
     }
 }
+export const disconnectUser = async function (req, res, next) {
+    try {
+        const result = await BroadcastModel.getBroadcastById(req.params.id)
 
+        if (result.length === 0)
+            return res.status(404).send({ error: `Broadcast ${req.params.id} not found` })
+
+        res.status(200).send({ success: true, broadcast: result[0] })
+
+    } catch (e) {
+        return next(e)
+    }
+}
 
 export const getBroadcastById = async function (req, res, next) {
     try {

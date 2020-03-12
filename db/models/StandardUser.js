@@ -6,11 +6,12 @@ export class StandardUser {
         this.id = userId;
         this.roomId = null;
         this.credit = credit
+        this.isTutor = false;
     }
 }
 
 export const createTable = async () => {
-    const query = `CREATE TABLE ${tableName} (id VARCHAR(255) PRIMARY KEY, roomId VARCHAR(255), credit INT)`;
+    const query = `CREATE TABLE ${tableName} (id VARCHAR(255) PRIMARY KEY, roomId VARCHAR(255), credit INT, isTutor BOOL)`;
     return await coreMethods.runQuery(query)
 }
 

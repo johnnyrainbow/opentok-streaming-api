@@ -7,6 +7,8 @@ export const createSession = async function (options) {
     })
 }
 export const generateToken = function (sessionId, options) {
-
     return dependencies.opentok.generateToken(sessionId, options);
+}
+export const forceDisconnect = function (sessionId, connectionId) {
+    return dependencies.opentok.forceDisconnect(sessionId, connectionId);
 }
