@@ -13,10 +13,7 @@ export const getStandardUserById = async function (req, res, next) {
 
 export const getMyUser = async function (req, res, next) {
     try {
-        console.log(req.userId)
         const result = await StandardUserModel.getStandardUserById(req.userId)
-        console.log("HMM???")
-        console.log(result)
         res.status(200).send({ success: true, standardUser: result[0] })
 
     } catch (e) {

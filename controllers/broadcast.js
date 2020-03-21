@@ -69,6 +69,10 @@ export const generateViewerToken = async function (req, res, next) {
         if (broadcastResult.length === 0)
             return res.status(404).send({ error: `Broadcast ${req.params.id} not found` })
 
+        const userResult = await StandardUserModel.getStandardUserById(req.userId)
+        if (req.params.id !== userResult[0].roomId)
+            return res.status(400).send({ error: `Unauthorized` })
+
         const sessionId = broadcastResult[0].sessionId
         const token = opentok.generateToken(sessionId, { role: "subscriber" });
 
@@ -94,12 +98,16 @@ export const disconnectUser = async function (req, res, next) {
 
 export const getBroadcastById = async function (req, res, next) {
     try {
-        const result = await BroadcastModel.getBroadcastById(req.params.id)
+        const broadcastResult = await BroadcastModel.getBroadcastById(req.params.id)
 
-        if (result.length === 0)
+        if (broadcastResult.length === 0)
             return res.status(404).send({ error: `Broadcast ${req.params.id} not found` })
 
-        res.status(200).send({ success: true, broadcast: result[0] })
+        const userResult = await StandardUserModel.getStandardUserById(req.userId)
+        if (req.params.id !== userResult[0].roomId)
+            return res.status(400).send({ error: `Unauthorized` })
+
+        res.status(200).send({ success: true, broadcast: broadcastResult[0] })
 
     } catch (e) {
         return next(e)

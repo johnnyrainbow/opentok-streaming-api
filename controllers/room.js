@@ -68,9 +68,9 @@ export const joinRoom = async function (req, res, next) {
         const usersInRoom = await RoomModel.getAllUsersInRoom(req.params.id)
 
         if (usersInRoom.length >= roomResult[0].maxOccupancy) return res.status(404).send({ error: `Room is full` })
-        //TODO do i need some kind of lock to stop race condition joining room
+
         //update user roomId 
-        await StandardUserModel.updateStandardUserRoomId(req.params.id)
+        await StandardUserModel.updateStandardUserRoomId(req.userId, req.params.id)
 
         //check if we now have enough capacity to start room
         if (usersInRoom.length >= roomResult[0].maxOccupancy)
@@ -89,6 +89,10 @@ export const getRoomBroadcast = async function (req, res, next) {
 
         if (result.length === 0)
             return res.status(404).send({ error: `No broadcast found for room ${req.params.id}` })
+
+        const userResult = await StandardUserModel.getStandardUserById(req.userId)
+        if (req.params.id !== userResult[0].roomId)
+            return res.status(400).send({ error: `Unauthorized` })
 
         res.status(200).send({ success: true, broadcast: result[0] })
 
