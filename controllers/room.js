@@ -8,9 +8,9 @@ export const createRoom = async function (req, res, next) {
         // const result = await RoomModel.getActiveRoomByHostId(req.userId)
         // if (result.length > 0) return res.status(400).send({ error: "You already have an active room." })
 
-        const { maxOccupancy, startAtOccupancy, startAtTime, title, description, cost, isVariableCost } = req.body
+        const { maxOccupancy, startAtOccupancy, startAtTime, title, description, cost } = req.body
 
-        const roomCreateResult = await RoomModel.createRoom(req.userId, maxOccupancy, startAtOccupancy, startAtTime, title, description, cost, isVariableCost)
+        const roomCreateResult = await RoomModel.createRoom(req.userId, maxOccupancy, startAtOccupancy, startAtTime, title, description, cost)
 
         res.status(200).send({ success: true, room: roomCreateResult })
 
@@ -46,13 +46,7 @@ export const getRoomCost = async function (req, res, next) {
     let costForUser = null
     const usersInRoom = await RoomModel.getAllUsersInRoom(req.params.id)
 
-    if (roomResult[0].isVariableCost) {
-        costForUser = roomResult[0].cost / usersInRoom.length
-    } else {
-        costForUser = roomResult[0].cost
-    }
-
-    res.status(200).send({ isVariableCost: roomResult[0].isVariableCost, cost: costForUser })
+    res.status(200).send({ cost: roomResult[0].cost })
 }
 
 export const joinRoom = async function (req, res, next) {
