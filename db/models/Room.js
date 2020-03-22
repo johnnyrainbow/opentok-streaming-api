@@ -5,7 +5,7 @@ const tableName = "room"
 
 
 export class Room {
-    constructor(hostId, maxOccupancy, startAtOccupancy, startAtTime, title, description, cost) {
+    constructor(hostId, maxOccupancy, startAtOccupancy, startAtTime, title, description, cost, estDuration) {
         this.hostId = hostId;
         this.maxOccupancy = maxOccupancy
         this.startAtOccupancy = startAtOccupancy
@@ -14,6 +14,7 @@ export class Room {
         this.description = description
         this.cost = cost //the total cost per minute that the room must take from combined users
         this.state = "WAITING" //WAITING, IN_PROGRESS, FINISHED,
+        this.estDuration = estDuration
         this.chatLogsId = null
     }
 }
@@ -21,7 +22,7 @@ export class Room {
 export const selectStates = () => { return { WAITING: "WAITING", IN_PROGRESS: "IN_PROGRESS", FINISHED: "FINISHED" } }
 
 export const createTable = async () => {
-    const query = `CREATE TABLE ${tableName} (hostId VARCHAR(255) PRIMARY KEY, maxOccupancy INT, startAtOccupancy INT, startAtTime DATETIME, title VARCHAR(255), description VARCHAR(1000), cost INT, state VARCHAR(255), chatLogsId VARCHAR(255))`;
+    const query = `CREATE TABLE ${tableName} (hostId VARCHAR(255) PRIMARY KEY, maxOccupancy INT, startAtOccupancy INT, startAtTime DATETIME, title VARCHAR(255), description VARCHAR(1000), cost INT, state VARCHAR(255), estDuration INT, chatLogsId VARCHAR(255))`;
     return await coreMethods.runQuery(query)
 }
 
@@ -50,8 +51,8 @@ export const getAllUsersInRoom = async id => {
     return await coreMethods.runQuery(query, id)
 }
 
-export const createRoom = async (hostId, maxOccupancy, title, description, cost) => {
-    const createRoom = new Room(hostId, maxOccupancy, title, description, cost)
+export const createRoom = async (hostId, maxOccupancy, title, description, cost, estDuration) => {
+    const createRoom = new Room(hostId, maxOccupancy, title, description, cost, estDuration)
     await coreMethods.create(tableName, createRoom)
     return createRoom
 }

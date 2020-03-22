@@ -4,13 +4,13 @@ import * as StandardUserModel from "../db/models/StandardUser"
 
 export const createRoom = async function (req, res, next) {
     try {
-        //ensure we don't already have an active room
-        // const result = await RoomModel.getActiveRoomByHostId(req.userId)
-        // if (result.length > 0) return res.status(400).send({ error: "You already have an active room." })
+        // ensure we don't already have an active room
+        const result = await RoomModel.getActiveRoomByHostId(req.userId)
+        if (result.length > 0) return res.status(400).send({ error: "You already have an active room." })
 
-        const { maxOccupancy, startAtOccupancy, startAtTime, title, description, cost } = req.body
+        const { maxOccupancy, startAtOccupancy, startAtTime, title, description, cost, estDuration } = req.body
 
-        const roomCreateResult = await RoomModel.createRoom(req.userId, maxOccupancy, startAtOccupancy, startAtTime, title, description, cost)
+        const roomCreateResult = await RoomModel.createRoom(req.userId, maxOccupancy, startAtOccupancy, startAtTime, title, description, cost, estDuration)
 
         res.status(200).send({ success: true, room: roomCreateResult })
 
