@@ -43,9 +43,6 @@ export const getRoomCost = async function (req, res, next) {
     const roomResult = await RoomModel.getRoomByHostId(req.params.id)
     if (roomResult.length === 0) return res.status(404).send({ error: `Room ${req.params.id} not found` })
 
-    let costForUser = null
-    const usersInRoom = await RoomModel.getAllUsersInRoom(req.params.id)
-
     res.status(200).send({ cost: roomResult[0].cost })
 }
 
