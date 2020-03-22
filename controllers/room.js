@@ -8,9 +8,9 @@ export const createRoom = async function (req, res, next) {
         // const result = await RoomModel.getActiveRoomByHostId(req.userId)
         // if (result.length > 0) return res.status(400).send({ error: "You already have an active room." })
 
-        const { maxOccupancy, startAtOccupancy, startAtTime, title, description, cost, isVariableCost, minJoinTime } = req.body
+        const { maxOccupancy, startAtOccupancy, startAtTime, title, description, cost, isVariableCost } = req.body
 
-        const roomCreateResult = await RoomModel.createRoom(req.userId, maxOccupancy, startAtOccupancy, startAtTime, title, description, cost, isVariableCost, minJoinTime)
+        const roomCreateResult = await RoomModel.createRoom(req.userId, maxOccupancy, startAtOccupancy, startAtTime, title, description, cost, isVariableCost)
 
         res.status(200).send({ success: true, room: roomCreateResult })
 
@@ -69,6 +69,11 @@ export const joinRoom = async function (req, res, next) {
 
         if (usersInRoom.length >= roomResult[0].maxOccupancy) return res.status(404).send({ error: `Room is full` })
 
+        if (myUserResult[0].credit < roomResult[0].cost)
+            return res.status(400).send({ error: `Insufficient funds` })
+
+        //bill user room cost.
+        await StandardUserModel.subtractUserCredit(req.userId, roomResult[0].cost)
         //update user roomId 
         await StandardUserModel.updateStandardUserRoomId(req.userId, req.params.id)
 

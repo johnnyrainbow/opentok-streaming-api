@@ -1,7 +1,7 @@
 import * as opentok from "../opentok/promises"
 import * as BroadcastModel from "../db/models/Broadcast"
 import * as RoomModel from "../db/models/Room"
-
+import * as StandardUserModel from "../db/models/StandardUser"
 //Create a broadcast for a specified room. our userId must match the room hostId.
 export const createBroadcast = async function (req, res, next) {
     //HI GAB QUESTION OF THE DAY IS HOW DO WE STOP SOMEONE FROM GIGA SPAMMING THIS ENDPOINT, creating lotsa opentok sessions IF 1 BROADCAST PER USER?

@@ -24,10 +24,12 @@ export const getAllUsersInRoom = async roomId => {
     const query = `SELECT * FROM ${tableName} WHERE roomId = ?`
     return await coreMethods.runQuery(query, roomId)
 }
-
+export const subtractUserCredit = async (userId, amount) => {
+    const query = `UPDATE ${tableName} SET credit = ? WHERE id = ?`
+    return await coreMethods.runQuery(query, [amount, userId])
+}
 export const updateStandardUserRoomId = async (userId, roomId) => {
     const query = `UPDATE ${tableName} SET roomId = ? WHERE id = ?`
-    console.log(userId + ":" + roomId)
     return await coreMethods.runQuery(query, [roomId, userId])
 }
 
